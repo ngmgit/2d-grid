@@ -2,16 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum mDirection
+{
+	UP, DOWN, LEFT, RIGHT
+}
+
 public class TouchManager : MonoBehaviour
 {
-	public Vector2 deltaPos;
-	public int count;
-
-
-	public enum mDirection
-	{
-		UP, DOWN, LEFT, RIGHT
-	}
+	public  PlayerStats mPlayerStats;
 	public mDirection currentDirection;
 
 	private enum mQuadrant
@@ -22,6 +20,7 @@ public class TouchManager : MonoBehaviour
 		BOTTOMRIGHT
 	}
 	private mQuadrant  currentQuadrant;
+	private Vector2 deltaPos;
 
 	private void Start()
 	{
@@ -31,8 +30,9 @@ public class TouchManager : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-		count = Input.touchCount;
-		if (Input.touchCount > 0) {
+		int count = Input.touchCount;
+
+		if (count > 0) {
 			if (count > 1) {
 				PauseOnMutiTouch();
 				return;
@@ -41,14 +41,18 @@ public class TouchManager : MonoBehaviour
 			Touch touch = Input.GetTouch(0);
 			HandleTouchPhase (touch);
 		}
+
+		mPlayerStats.dir = currentDirection;
 	}
 
 	private void HandleTouchPhase(Touch touch)
 	{
-		if (touch.deltaPosition.magnitude < 1) {
+		deltaPos = touch.deltaPosition;
+		if (deltaPos.magnitude < 3) {
 			return;
 		}
-		deltaPos = touch.deltaPosition.normalized;
+
+		deltaPos = deltaPos.normalized;
 
 		switch (touch.phase)
 		{
@@ -56,10 +60,6 @@ public class TouchManager : MonoBehaviour
 				SetQuadrant();
 				break;
 		}
-	}
-
-	private void PauseOnMutiTouch() {
-
 	}
 
 	private void SetQuadrant()
@@ -107,5 +107,9 @@ public class TouchManager : MonoBehaviour
 					currentDirection = mDirection.RIGHT;
 				break;
 		}
+	}
+
+	private void PauseOnMutiTouch() {
+
 	}
 }
