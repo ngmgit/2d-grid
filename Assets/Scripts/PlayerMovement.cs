@@ -6,13 +6,16 @@ public class PlayerMovement : MonoBehaviour {
 
 	public PlayerStats mPlayerStats;
 	public Vector2 currentPosInGrid;
-	public Vector3 nextPosition;
 
+	private Vector3 nextPosition;
+	private Vector3 prevPostion;
 	private Vector2 targetDir;
 	private Vector2 prevTargetDir;
+	private float currentSpeed;
 
 	void Start()
 	{
+		currentSpeed = mPlayerStats.speed;
 		targetDir = Vector2.up;
 		Vector2 SpawnPos = Camera.main.ScreenToWorldPoint(
 							new Vector2(mPlayerStats.grid.sizeInPixel.x * 3,
@@ -32,12 +35,23 @@ public class PlayerMovement : MonoBehaviour {
 		SetCurrentGridPosition();
 		MovePlayer ();
 		SetPlayerDirection ();
+		ChangeSpeed();
+
 		prevTargetDir = targetDir;
+		prevPostion = nextPosition;
+	}
+
+	private void SetCurrentGridPosition()
+	{
+		Vector2 currentScreenPos = Camera.main.WorldToScreenPoint(transform.position);
+		currentPosInGrid = new Vector2 (currentScreenPos.x / mPlayerStats.grid.sizeInPixel.x,
+										currentScreenPos.y / mPlayerStats.grid.sizeInPixel.y);
 	}
 
 	private void MovePlayer()
 	{
 		if (CanChangePosition()) {
+			currentSpeed = mPlayerStats.speed;
 			SetPosition();
 		}
 
@@ -50,7 +64,7 @@ public class PlayerMovement : MonoBehaviour {
 
 	private void MoveToPosition()
 	{
-		transform.position = Vector3.MoveTowards(transform.position, nextPosition, mPlayerStats.speed * Time.deltaTime);
+		transform.position = Vector3.MoveTowards(transform.position, nextPosition, currentSpeed * Time.deltaTime);
 	}
 
 	private void SetPosition()
@@ -90,17 +104,18 @@ public class PlayerMovement : MonoBehaviour {
 		}
 	}
 
-	private void SetDirectionAndPosition(Vector2 dir) {
+	private void SetDirectionAndPosition(Vector2 dir)
+	{
 		targetDir = dir;
 
 		if (Vector2.Dot(targetDir, prevTargetDir) == -1)
 			SetPosition();
 	}
 
-	private void SetCurrentGridPosition()
+	private void ChangeSpeed()
 	{
-		Vector2 currentScreenPos = Camera.main.WorldToScreenPoint(transform.position);
-		currentPosInGrid = new Vector2 (currentScreenPos.x / mPlayerStats.grid.sizeInPixel.x,
-										currentScreenPos.y / mPlayerStats.grid.sizeInPixel.y);
+		if (Vector2.Dot(targetDir, prevTargetDir) == 0) {
+			currentSpeed = mPlayerStats.dashSpeed;
+		}
 	}
 }

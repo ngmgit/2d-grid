@@ -6,6 +6,7 @@ using UnityEngine;
 public class PlayerStats : ScriptableObject {
 	public mDirection dir;
 	public float speed;
+	public float dashSpeed;
 	public float rotateSpeed;
 	public int score;
 

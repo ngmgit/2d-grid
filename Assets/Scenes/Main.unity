@@ -1275,6 +1275,8 @@ MonoBehaviour:
   mPlayerStats: {fileID: 11400000, guid: 303108734d41ec445b08c016225930fa, type: 2}
   currentPosInGrid: {x: 0, y: 0}
   nextPosition: {x: 0, y: 0, z: 0}
+  prevPostion: {x: 0, y: 0, z: 0}
+  currentSpeed: 0
 --- !u!1 &795514745
 GameObject:
   m_ObjectHideFlags: 0
@@ -1974,7 +1976,7 @@ MonoBehaviour:
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
-  m_ChildAlignment: 0
+  m_ChildAlignment: 4
   m_StartCorner: 0
   m_StartAxis: 0
   m_CellSize: {x: 133.33, y: 160}

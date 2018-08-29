@@ -13,6 +13,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dir: 1
   speed: 16
+  dashSpeed: 32
   rotateSpeed: 2
   score: 0
   grid:
