@@ -110,6 +110,6 @@ public class TouchManager : MonoBehaviour
 	}
 
 	private void PauseOnMutiTouch() {
-
+		// show pause screen
 	}
 }

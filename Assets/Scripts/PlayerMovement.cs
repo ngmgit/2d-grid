@@ -9,6 +9,7 @@ public class PlayerMovement : MonoBehaviour {
 	public Vector3 nextPosition;
 
 	private Vector2 targetDir;
+	private Vector2 prevTargetDir;
 
 	void Start()
 	{
@@ -18,6 +19,7 @@ public class PlayerMovement : MonoBehaviour {
 										mPlayerStats.grid.sizeInPixel.y * 4));
 
 		transform.position = new Vector3(SpawnPos.x, SpawnPos.y, 0);
+		nextPosition = SpawnPos;
 
 		SetCurrentGridPosition();
 		SetPosition();
@@ -30,15 +32,20 @@ public class PlayerMovement : MonoBehaviour {
 		SetCurrentGridPosition();
 		MovePlayer ();
 		SetPlayerDirection ();
+		prevTargetDir = targetDir;
 	}
 
 	private void MovePlayer()
 	{
-		if (Vector2.Distance(transform.position, nextPosition) <= 0) {
+		if (CanChangePosition()) {
 			SetPosition();
 		}
 
 		MoveToPosition();
+	}
+
+	private bool CanChangePosition () {
+		return Vector2.Distance(transform.position, nextPosition) <= 0;
 	}
 
 	private void MoveToPosition()
@@ -48,7 +55,7 @@ public class PlayerMovement : MonoBehaviour {
 
 	private void SetPosition()
 	{
-		Vector2 screenPos = Camera.main.WorldToScreenPoint(transform.position);
+		Vector2 screenPos = Camera.main.WorldToScreenPoint(nextPosition);
 
 		Vector3 nextScreenPos;
 		nextScreenPos.x = screenPos.x + (mPlayerStats.grid.sizeInPixel.x * targetDir.x);
@@ -56,7 +63,6 @@ public class PlayerMovement : MonoBehaviour {
 		nextScreenPos.z = 0;
 
 		Vector3 nextWorldPos = Camera.main.ScreenToWorldPoint(nextScreenPos);
-
 		nextPosition = nextWorldPos;
 		nextPosition.z = 0;
 	}
@@ -67,21 +73,28 @@ public class PlayerMovement : MonoBehaviour {
 		switch (mPlayerStats.dir)
 		{
 			case mDirection.UP:
-				targetDir = Vector2.up;
+				SetDirectionAndPosition(Vector2.up);
 				break;
 
 			case mDirection.DOWN:
-				targetDir = Vector2.down;
+				SetDirectionAndPosition(Vector2.down);
 				break;
 
 			case mDirection.RIGHT:
-				targetDir = Vector2.right;
+				SetDirectionAndPosition(Vector2.right);
 				break;
 
 			case mDirection.LEFT:
-				targetDir = Vector2.left;
+				SetDirectionAndPosition(Vector2.left);
 				break;
 		}
+	}
+
+	private void SetDirectionAndPosition(Vector2 dir) {
+		targetDir = dir;
+
+		if (Vector2.Dot(targetDir, prevTargetDir) == -1)
+			SetPosition();
 	}
 
 	private void SetCurrentGridPosition()
