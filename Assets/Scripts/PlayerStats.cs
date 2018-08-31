@@ -26,4 +26,5 @@ public class PlayerStats : ScriptableObject {
 
 	public MyBounds mbounds;
 	public MyGrid grid;
+	public Vector2 distance;
 }

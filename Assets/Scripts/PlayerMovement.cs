@@ -15,8 +15,10 @@ public class PlayerMovement : MonoBehaviour {
 	private Vector2 targetDir;
 	private Vector2 prevTargetDir;
 	private float currentSpeed;
+	private readonly int playerZ = 0;
+	public float distTemp;
 
-	void Start()
+	private void Start()
 	{
 		currentSpeed = mPlayerStats.speed;
 		targetDir = Vector2.up;
@@ -24,6 +26,7 @@ public class PlayerMovement : MonoBehaviour {
 		SetCurrentGridPosition();
 		SetPosition();
 		MoveToPosition();
+		distTemp = Vector2.Distance(prevPostion, nextPosition);
 	}
 
 	private void MovePlayerToSpawn(Vector2 mPosition)
@@ -34,12 +37,11 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	// Update is called once per frame
-	void Update ()
+	private void Update ()
 	{
 		SetCurrentGridPosition();
 		MovePlayer ();
 		SetPlayerDirection ();
-		ChangeSpeed();
 
 		prevTargetDir = targetDir;
 	}
@@ -53,7 +55,7 @@ public class PlayerMovement : MonoBehaviour {
 
 	private void MovePlayer()
 	{
-		if (CheckIfPrevPosInGrid() && CheckIfPlayerOutside())
+		if (CheckIfPrevPosInGrid() && CheckIfPlayerOutside(0.5f))
 			ScreenWrapPlayer();
 
 		if (CanChangePosition()) {
@@ -77,97 +79,102 @@ public class PlayerMovement : MonoBehaviour {
 	private void SetPosition()
 	{
 		prevPostion = nextPosition;
-		prevPostion.z = 0;
+		prevPostion.z = playerZ;
 
 		Vector2 screenPos = Camera.main.WorldToScreenPoint(prevPostion);
 
 		Vector3 nextScreenPos;
 		nextScreenPos.x = screenPos.x + (mPlayerStats.grid.sizeInPixel.x * targetDir.x);
 		nextScreenPos.y = screenPos.y + (mPlayerStats.grid.sizeInPixel.y * targetDir.y);
-		nextScreenPos.z = 0;
+		nextScreenPos.z = playerZ;
 
 		Vector3 nextWorldPos = Camera.main.ScreenToWorldPoint(nextScreenPos);
 		nextPosition = nextWorldPos;
-		nextPosition.z = 0;
+		nextPosition.z = playerZ;
 	}
 
 	private void ScreenWrapPlayer() {
 		Vector2 swapScreenPos;
+		Vector2 swapWorldPos;
 
 		switch (mPlayerStats.dir) {
 			case mDirection.UP:
 				swapScreenPos = new Vector2 (
 					currentPosInGrid.x * mPlayerStats.grid.sizeInPixel.x,
 					- mPlayerStats.grid.sizeInPixel.y / 2);
-				transform.position = Camera.main.ScreenToWorldPoint(swapScreenPos);
+				swapWorldPos = Camera.main.ScreenToWorldPoint(swapScreenPos);
+				transform.position = new Vector3 (swapWorldPos.x, swapWorldPos.y, playerZ);
 
 				swapScreenPos = new Vector2 (
 					currentPosInGrid.x * mPlayerStats.grid.sizeInPixel.x,
 					- mPlayerStats.grid.sizeInPixel.y);
 				prevPostion = Camera.main.ScreenToWorldPoint(swapScreenPos);
-				prevPostion.z = 0;
+				prevPostion.z = playerZ;
 
-				swapScreenPos = new Vector2 (currentPosInGrid.x * mPlayerStats.grid.sizeInPixel.x, 0);
+				swapScreenPos = new Vector2 (currentPosInGrid.x * mPlayerStats.grid.sizeInPixel.x, playerZ);
 				nextPosition = Camera.main.ScreenToWorldPoint(swapScreenPos);
-				nextPosition.z = 0;
+				nextPosition.z = playerZ;
 				break;
 
 			case mDirection.DOWN:
 				swapScreenPos = new Vector2 (
 					currentPosInGrid.x * mPlayerStats.grid.sizeInPixel.x,
 					(mPlayerStats.grid.rows + 0.5f) * mPlayerStats.grid.sizeInPixel.y);
-				transform.position = Camera.main.ScreenToWorldPoint(swapScreenPos);
+				swapWorldPos = Camera.main.ScreenToWorldPoint(swapScreenPos);
+				transform.position = new Vector3 (swapWorldPos.x, swapWorldPos.y, playerZ);
 
 				swapScreenPos = new Vector2 (
 					currentPosInGrid.x * mPlayerStats.grid.sizeInPixel.x,
 					(mPlayerStats.grid.rows + 1) * mPlayerStats.grid.sizeInPixel.y);
 				prevPostion = Camera.main.ScreenToWorldPoint(swapScreenPos);
-				prevPostion.z = 0;
+				prevPostion.z = playerZ;
 
 				swapScreenPos = new Vector2 (currentPosInGrid.x * mPlayerStats.grid.sizeInPixel.x, Screen.height);
 				nextPosition = Camera.main.ScreenToWorldPoint(swapScreenPos);
-				nextPosition.z = 0;
+				nextPosition.z = playerZ;
 				break;
 
 			case mDirection.RIGHT:
 				swapScreenPos = new Vector2 (
 					- mPlayerStats.grid.sizeInPixel.x / 2,
 					currentPosInGrid.y * mPlayerStats.grid.sizeInPixel.y);
-				transform.position = Camera.main.ScreenToWorldPoint(swapScreenPos);
+				swapWorldPos = Camera.main.ScreenToWorldPoint(swapScreenPos);
+				transform.position = new Vector3 (swapWorldPos.x, swapWorldPos.y, playerZ);
 
 				swapScreenPos = new Vector2 (
 					- mPlayerStats.grid.sizeInPixel.x,
 					currentPosInGrid.y * mPlayerStats.grid.sizeInPixel.y);
 				prevPostion = Camera.main.ScreenToWorldPoint(swapScreenPos);
-				prevPostion.z = 0;
+				prevPostion.z = playerZ;
 
 				swapScreenPos = new Vector2 (0, currentPosInGrid.y * mPlayerStats.grid.sizeInPixel.y);
 				nextPosition = Camera.main.ScreenToWorldPoint(swapScreenPos);
-				nextPosition.z = 0;
+				nextPosition.z = playerZ;
 				break;
 
 			case mDirection.LEFT:
 				swapScreenPos = new Vector2 (
 					(mPlayerStats.grid.columns + 0.5f) * mPlayerStats.grid.sizeInPixel.x,
 					currentPosInGrid.y * mPlayerStats.grid.sizeInPixel.y);
-				transform.position = Camera.main.ScreenToWorldPoint(swapScreenPos);
+				swapWorldPos = Camera.main.ScreenToWorldPoint(swapScreenPos);
+				transform.position = new Vector3 (swapWorldPos.x, swapWorldPos.y, 0);
 
 				swapScreenPos = new Vector2 (
 					(mPlayerStats.grid.columns + 1) * mPlayerStats.grid.sizeInPixel.x,
 					currentPosInGrid.y * mPlayerStats.grid.sizeInPixel.y);
 				prevPostion = Camera.main.ScreenToWorldPoint(swapScreenPos);
-				prevPostion.z = 0;
+				prevPostion.z = playerZ;
 
 				swapScreenPos = new Vector2 (Screen.width, currentPosInGrid.y * mPlayerStats.grid.sizeInPixel.y);
 				nextPosition = Camera.main.ScreenToWorldPoint(swapScreenPos);
-				nextPosition.z = 0;
+				nextPosition.z = playerZ;
 				break;
 		}
 	}
 
-	private bool CheckIfPlayerOutside () {
+	private bool CheckIfPlayerOutside (float gridIncrementer) {
 
-		PlayerStats.MyBounds newBounds = GameController.GetScreenToWorld(0.5f, mPlayerStats);
+		PlayerStats.MyBounds newBounds = GameController.GetScreenToWorld(gridIncrementer, mPlayerStats);
 
 		if ((transform.position.x >= newBounds.lower.x
 			&& transform.position.x <= newBounds.upper.x)
@@ -195,7 +202,7 @@ public class PlayerMovement : MonoBehaviour {
 
 	private void SetPlayerDirection()
 	{
-		//float step = mPlayerStats.rotateSpeed * Time.deltaTime;
+
 		switch (mPlayerStats.dir)
 		{
 			case mDirection.UP:
@@ -220,14 +227,11 @@ public class PlayerMovement : MonoBehaviour {
 	{
 		targetDir = dir;
 
-		if (Vector2.Dot(targetDir, prevTargetDir) == -1)
-			SetPosition();
-	}
-
-	private void ChangeSpeed()
-	{
-		if (Vector2.Dot(targetDir, prevTargetDir) == 0) {
+		if (Vector2.Dot(targetDir, prevTargetDir) == 0 && currentSpeed != mPlayerStats.dashSpeed) {
 			currentSpeed = mPlayerStats.dashSpeed;
 		}
+
+		if (Vector2.Dot(targetDir, prevTargetDir) == -1)
+			SetPosition();
 	}
 }

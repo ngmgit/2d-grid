@@ -20,6 +20,13 @@ public class GameController : MonoBehaviour {
 		float gridSizeHz = Hz / columns;
 		float gridSizeVt = Vt / rows;
 
+
+
+		mPlayerStats.distance.x = Vector2.Distance(Camera.main.ScreenToWorldPoint(new Vector2(0,0)),
+									Camera.main.ScreenToWorldPoint(new Vector2(0, gridSizeHz)));
+		mPlayerStats.distance.y = Vector2.Distance(Camera.main.ScreenToWorldPoint(new Vector2(0,0)),
+									Camera.main.ScreenToWorldPoint(new Vector2(gridSizeVt,0)));
+
 		mPlayerStats.grid.sizeInPixel = new Vector2(gridSizeHz, gridSizeVt);
 		mPlayerStats.grid.rows = rows;
 		mPlayerStats.grid.columns = columns;

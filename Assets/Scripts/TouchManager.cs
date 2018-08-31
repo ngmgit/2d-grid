@@ -22,6 +22,7 @@ public class TouchManager : MonoBehaviour
 	private mQuadrant  currentQuadrant;
 	private Vector2 deltaPos;
 	private Vector2 currentDirectionVector;
+	private readonly float dotProductConst = 0.5f;
 
 	private void Start()
 	{
@@ -51,7 +52,8 @@ public class TouchManager : MonoBehaviour
 	private void HandleTouchPhase(Touch touch)
 	{
 		deltaPos = touch.deltaPosition;
-		if (deltaPos.magnitude < 3) {
+
+		if ((deltaPos * touch.deltaTime).magnitude < 0.25f) {
 			return;
 		}
 
@@ -83,7 +85,7 @@ public class TouchManager : MonoBehaviour
 		switch (currentQuadrant)
 		{
 			case mQuadrant.TOPRIGHT:
-				if (Vector2.Dot(Vector2.up, deltaPos) > 0.5f)
+				if (Vector2.Dot(Vector2.up, deltaPos) > dotProductConst)
 				{
 					currentDirection = mDirection.UP;
 					currentDirectionVector = Vector2.up;
@@ -94,7 +96,7 @@ public class TouchManager : MonoBehaviour
 				break;
 
 			case mQuadrant.TOPLEFT:
-				if (Vector2.Dot(Vector2.up, deltaPos) > 0.5f)
+				if (Vector2.Dot(Vector2.up, deltaPos) > dotProductConst)
 				{
 					currentDirection = mDirection.UP;
 					currentDirectionVector = Vector2.up;
@@ -105,7 +107,7 @@ public class TouchManager : MonoBehaviour
 				break;
 
 			case mQuadrant.BOTTOMLEFT:
-				if (Vector2.Dot(Vector2.down, deltaPos) > 0.5f)
+				if (Vector2.Dot(Vector2.down, deltaPos) > dotProductConst)
 				{
 					currentDirection = mDirection.DOWN;
 					currentDirectionVector = Vector2.down;
@@ -116,7 +118,7 @@ public class TouchManager : MonoBehaviour
 				break;
 
 			case mQuadrant.BOTTOMRIGHT:
-				if (Vector2.Dot(Vector2.down, deltaPos) > 0.5f)
+				if (Vector2.Dot(Vector2.down, deltaPos) > dotProductConst)
 				{
 					currentDirection = mDirection.DOWN;
 					currentDirectionVector = Vector2.down;
