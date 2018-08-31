@@ -21,10 +21,12 @@ public class TouchManager : MonoBehaviour
 	}
 	private mQuadrant  currentQuadrant;
 	private Vector2 deltaPos;
+	private Vector2 currentDirectionVector;
 
 	private void Start()
 	{
 		currentDirection = mDirection.UP;
+		currentDirectionVector = Vector2.up;
 	}
 
 	// Update is called once per frame
@@ -43,6 +45,7 @@ public class TouchManager : MonoBehaviour
 		}
 
 		mPlayerStats.dir = currentDirection;
+		mPlayerStats.dirVector = currentDirectionVector;
 	}
 
 	private void HandleTouchPhase(Touch touch)
@@ -81,30 +84,46 @@ public class TouchManager : MonoBehaviour
 		{
 			case mQuadrant.TOPRIGHT:
 				if (Vector2.Dot(Vector2.up, deltaPos) > 0.5f)
+				{
 					currentDirection = mDirection.UP;
-				else
+					currentDirectionVector = Vector2.up;
+				} else {
 					currentDirection = mDirection.RIGHT;
+					currentDirectionVector = Vector2.right;
+				}
 				break;
 
 			case mQuadrant.TOPLEFT:
 				if (Vector2.Dot(Vector2.up, deltaPos) > 0.5f)
+				{
 					currentDirection = mDirection.UP;
-				else
+					currentDirectionVector = Vector2.up;
+				} else {
 					currentDirection = mDirection.LEFT;
+					currentDirectionVector = Vector2.left;
+				}
 				break;
 
 			case mQuadrant.BOTTOMLEFT:
 				if (Vector2.Dot(Vector2.down, deltaPos) > 0.5f)
+				{
 					currentDirection = mDirection.DOWN;
-				else
+					currentDirectionVector = Vector2.down;
+				} else {
 					currentDirection = mDirection.LEFT;
+					currentDirectionVector = Vector2.left;
+				}
 				break;
 
 			case mQuadrant.BOTTOMRIGHT:
 				if (Vector2.Dot(Vector2.down, deltaPos) > 0.5f)
+				{
 					currentDirection = mDirection.DOWN;
-				else
+					currentDirectionVector = Vector2.down;
+				} else {
 					currentDirection = mDirection.RIGHT;
+					currentDirectionVector = Vector2.right;
+				}
 				break;
 		}
 	}

@@ -7,22 +7,30 @@ public class GameController : MonoBehaviour {
 
 	public PlayerStats mPlayerStats;
 	public GridLayoutGroup gridGrpBg;
+	public SetSpawnPositions playerSpawn;
 
-	int hzDivCount = 6;
-	int vtDivCount = 8;
+	int columns = 6;
+	int rows = 8;
 
-	// Use this for initialization
-	void Start () {
+	void Awake()
+	{
 		float Hz = Screen.width;
 		float Vt = Screen.height;
 
-		float gridSizeHz = Hz / hzDivCount;
-		float gridSizeVt = Vt / vtDivCount;
+		float gridSizeHz = Hz / columns;
+		float gridSizeVt = Vt / rows;
 
 		mPlayerStats.grid.sizeInPixel = new Vector2(gridSizeHz, gridSizeVt);
-		mPlayerStats.grid.rows = hzDivCount;
-		mPlayerStats.grid.columns = vtDivCount;
+		mPlayerStats.grid.rows = rows;
+		mPlayerStats.grid.columns = columns;
 
 		gridGrpBg.cellSize = mPlayerStats.grid.sizeInPixel;
+
+		playerSpawn.spawnPosInGrid = new Vector2 (
+			mPlayerStats.grid.sizeInPixel.x * 3,
+			mPlayerStats.grid.sizeInPixel.y * 4);
+
+		mPlayerStats.mbounds.lower = Camera.main.ScreenToWorldPoint (new Vector2(0,0));
+		mPlayerStats.mbounds.upper = Camera.main.ScreenToWorldPoint (new Vector2(Screen.width, Screen.height));
 	}
 }

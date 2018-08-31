@@ -5,6 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName="Player/State And Info")]
 public class PlayerStats : ScriptableObject {
 	public mDirection dir;
+	public Vector2 dirVector;
 	public float speed;
 	public float dashSpeed;
 	public float rotateSpeed;
@@ -17,5 +18,12 @@ public class PlayerStats : ScriptableObject {
 		public int columns;
 	}
 
+	[System.Serializable]
+	public struct MyBounds {
+		public Vector2 lower;
+		public Vector2 upper;
+	}
+
+	public MyBounds mbounds;
 	public MyGrid grid;
 }
