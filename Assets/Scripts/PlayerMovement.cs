@@ -8,7 +8,9 @@ public class PlayerMovement : MonoBehaviour {
 	public Vector2 currentPosInGrid;
 	public SetSpawnPositions spawnPosition;
 
+	[SerializeField]
 	private Vector3 nextPosition;
+	[SerializeField]
 	private Vector3 prevPostion;
 	private Vector2 targetDir;
 	private Vector2 prevTargetDir;
@@ -40,7 +42,6 @@ public class PlayerMovement : MonoBehaviour {
 		ChangeSpeed();
 
 		prevTargetDir = targetDir;
-		prevPostion = nextPosition;
 	}
 
 	private void SetCurrentGridPosition()
@@ -52,6 +53,9 @@ public class PlayerMovement : MonoBehaviour {
 
 	private void MovePlayer()
 	{
+		if (CheckIfPrevPosInGrid() && CheckIfPlayerOutside())
+			ScreenWrapPlayer();
+
 		if (CanChangePosition()) {
 			currentSpeed = mPlayerStats.speed;
 			SetPosition();
@@ -61,7 +65,8 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	private bool CanChangePosition () {
-		return Vector2.Distance(transform.position, nextPosition) <= 0;
+		float dist  = Vector2.Distance(transform.position, nextPosition);
+		return dist <= 0 ;
 	}
 
 	private void MoveToPosition()
@@ -71,7 +76,8 @@ public class PlayerMovement : MonoBehaviour {
 
 	private void SetPosition()
 	{
-		ScreenWrapPlayer();
+		prevPostion = nextPosition;
+		prevPostion.z = 0;
 
 		Vector2 screenPos = Camera.main.WorldToScreenPoint(prevPostion);
 
@@ -86,81 +92,105 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	private void ScreenWrapPlayer() {
-		if (CheckIfPlayerOutside())
-		{
-			Vector2 swapScreenPos;
+		Vector2 swapScreenPos;
 
-			switch (mPlayerStats.dir) {
-				case mDirection.UP:
-					swapScreenPos = new Vector2 (
-						currentPosInGrid.x * mPlayerStats.grid.sizeInPixel.x,
-						- mPlayerStats.grid.sizeInPixel.y / 2);
+		switch (mPlayerStats.dir) {
+			case mDirection.UP:
+				swapScreenPos = new Vector2 (
+					currentPosInGrid.x * mPlayerStats.grid.sizeInPixel.x,
+					- mPlayerStats.grid.sizeInPixel.y / 2);
+				transform.position = Camera.main.ScreenToWorldPoint(swapScreenPos);
 
-					transform.position = Camera.main.ScreenToWorldPoint(swapScreenPos);
+				swapScreenPos = new Vector2 (
+					currentPosInGrid.x * mPlayerStats.grid.sizeInPixel.x,
+					- mPlayerStats.grid.sizeInPixel.y);
+				prevPostion = Camera.main.ScreenToWorldPoint(swapScreenPos);
+				prevPostion.z = 0;
 
-					swapScreenPos = new Vector2 (
-						currentPosInGrid.x * mPlayerStats.grid.sizeInPixel.x,
-						- mPlayerStats.grid.sizeInPixel.y);
+				swapScreenPos = new Vector2 (currentPosInGrid.x * mPlayerStats.grid.sizeInPixel.x, 0);
+				nextPosition = Camera.main.ScreenToWorldPoint(swapScreenPos);
+				nextPosition.z = 0;
+				break;
 
-					nextPosition = Camera.main.ScreenToWorldPoint(swapScreenPos);
-					break;
+			case mDirection.DOWN:
+				swapScreenPos = new Vector2 (
+					currentPosInGrid.x * mPlayerStats.grid.sizeInPixel.x,
+					(mPlayerStats.grid.rows + 0.5f) * mPlayerStats.grid.sizeInPixel.y);
+				transform.position = Camera.main.ScreenToWorldPoint(swapScreenPos);
 
-				case mDirection.DOWN:
-					swapScreenPos = new Vector2 (
-						currentPosInGrid.x * mPlayerStats.grid.sizeInPixel.x,
-						(mPlayerStats.grid.rows + 0.5f) * mPlayerStats.grid.sizeInPixel.y);
+				swapScreenPos = new Vector2 (
+					currentPosInGrid.x * mPlayerStats.grid.sizeInPixel.x,
+					(mPlayerStats.grid.rows + 1) * mPlayerStats.grid.sizeInPixel.y);
+				prevPostion = Camera.main.ScreenToWorldPoint(swapScreenPos);
+				prevPostion.z = 0;
 
-					transform.position = Camera.main.ScreenToWorldPoint(swapScreenPos);
+				swapScreenPos = new Vector2 (currentPosInGrid.x * mPlayerStats.grid.sizeInPixel.x, Screen.height);
+				nextPosition = Camera.main.ScreenToWorldPoint(swapScreenPos);
+				nextPosition.z = 0;
+				break;
 
-					swapScreenPos = new Vector2 (
-						currentPosInGrid.x * mPlayerStats.grid.sizeInPixel.x,
-						(mPlayerStats.grid.rows + 1) * mPlayerStats.grid.sizeInPixel.y);
+			case mDirection.RIGHT:
+				swapScreenPos = new Vector2 (
+					- mPlayerStats.grid.sizeInPixel.x / 2,
+					currentPosInGrid.y * mPlayerStats.grid.sizeInPixel.y);
+				transform.position = Camera.main.ScreenToWorldPoint(swapScreenPos);
 
-					nextPosition = Camera.main.ScreenToWorldPoint(swapScreenPos);
-					break;
+				swapScreenPos = new Vector2 (
+					- mPlayerStats.grid.sizeInPixel.x,
+					currentPosInGrid.y * mPlayerStats.grid.sizeInPixel.y);
+				prevPostion = Camera.main.ScreenToWorldPoint(swapScreenPos);
+				prevPostion.z = 0;
 
-				case mDirection.RIGHT:
-					swapScreenPos = new Vector2 (
-						- mPlayerStats.grid.sizeInPixel.x / 2,
-						currentPosInGrid.y * mPlayerStats.grid.sizeInPixel.y);
+				swapScreenPos = new Vector2 (0, currentPosInGrid.y * mPlayerStats.grid.sizeInPixel.y);
+				nextPosition = Camera.main.ScreenToWorldPoint(swapScreenPos);
+				nextPosition.z = 0;
+				break;
 
-					transform.position = Camera.main.ScreenToWorldPoint(swapScreenPos);
+			case mDirection.LEFT:
+				swapScreenPos = new Vector2 (
+					(mPlayerStats.grid.columns + 0.5f) * mPlayerStats.grid.sizeInPixel.x,
+					currentPosInGrid.y * mPlayerStats.grid.sizeInPixel.y);
+				transform.position = Camera.main.ScreenToWorldPoint(swapScreenPos);
 
-					swapScreenPos = new Vector2 (
-						- mPlayerStats.grid.sizeInPixel.x,
-						currentPosInGrid.y * mPlayerStats.grid.sizeInPixel.y);
+				swapScreenPos = new Vector2 (
+					(mPlayerStats.grid.columns + 1) * mPlayerStats.grid.sizeInPixel.x,
+					currentPosInGrid.y * mPlayerStats.grid.sizeInPixel.y);
+				prevPostion = Camera.main.ScreenToWorldPoint(swapScreenPos);
+				prevPostion.z = 0;
 
-					nextPosition = Camera.main.ScreenToWorldPoint(swapScreenPos);
-					break;
-
-				case mDirection.LEFT:
-					swapScreenPos = new Vector2 (
-						(mPlayerStats.grid.columns + 0.5f) * mPlayerStats.grid.sizeInPixel.x,
-						currentPosInGrid.y * mPlayerStats.grid.sizeInPixel.y);
-
-					transform.position = Camera.main.ScreenToWorldPoint(swapScreenPos);
-
-					swapScreenPos = new Vector2 (
-						(mPlayerStats.grid.columns + 1) * mPlayerStats.grid.sizeInPixel.x,
-						currentPosInGrid.y * mPlayerStats.grid.sizeInPixel.y);
-
-					nextPosition = Camera.main.ScreenToWorldPoint(swapScreenPos);
-					break;
-			}
+				swapScreenPos = new Vector2 (Screen.width, currentPosInGrid.y * mPlayerStats.grid.sizeInPixel.y);
+				nextPosition = Camera.main.ScreenToWorldPoint(swapScreenPos);
+				nextPosition.z = 0;
+				break;
 		}
 	}
 
 	private bool CheckIfPlayerOutside () {
-		if ((transform.position.x > mPlayerStats.mbounds.lower.x
-			&& transform.position.x < mPlayerStats.mbounds.upper.x)
+
+		PlayerStats.MyBounds newBounds = GameController.GetScreenToWorld(0.5f, mPlayerStats);
+
+		if ((transform.position.x >= newBounds.lower.x
+			&& transform.position.x <= newBounds.upper.x)
 			&&
-			(transform.position.y > mPlayerStats.mbounds.lower.y
-			&& transform.position.y < mPlayerStats.mbounds.upper.y))
+			(transform.position.y >= newBounds.lower.y
+			&& transform.position.y <= newBounds.upper.y))
 		{
 			return false;
 		}
 
 		return true;
+	}
+
+	private bool CheckIfPrevPosInGrid () {
+		if (Mathf.Approximately(prevPostion.x, mPlayerStats.mbounds.lower.x)||
+			Mathf.Approximately(prevPostion.x, mPlayerStats.mbounds.upper.x)||
+			Mathf.Approximately(prevPostion.y, mPlayerStats.mbounds.lower.y)||
+			Mathf.Approximately(prevPostion.y, mPlayerStats.mbounds.upper.y))
+		{
+			return true;
+		}
+
+		return false;
 	}
 
 	private void SetPlayerDirection()
