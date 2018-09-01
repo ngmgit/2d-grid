@@ -823,6 +823,8 @@ MonoBehaviour:
   mPlayerStats: {fileID: 11400000, guid: 303108734d41ec445b08c016225930fa, type: 2}
   gridGrpBg: {fileID: 982523839}
   playerSpawn: {fileID: 11400000, guid: 7d2708b98e6847b4394764e98d1ab59a, type: 2}
+  rows: 12
+  columns: 8
 --- !u!4 &557186297
 Transform:
   m_ObjectHideFlags: 0
@@ -1276,9 +1278,6 @@ MonoBehaviour:
   mPlayerStats: {fileID: 11400000, guid: 303108734d41ec445b08c016225930fa, type: 2}
   currentPosInGrid: {x: 0, y: 0}
   spawnPosition: {fileID: 11400000, guid: 7d2708b98e6847b4394764e98d1ab59a, type: 2}
-  nextPosition: {x: 0, y: 0, z: 0}
-  prevPostion: {x: 0, y: 0, z: 0}
-  distTemp: 0
 --- !u!1 &795514745
 GameObject:
   m_ObjectHideFlags: 0
